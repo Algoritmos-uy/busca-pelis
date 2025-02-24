@@ -41,32 +41,49 @@ async function searchMovies(query, page = 1) {
 
 // Función para mostrar películas
 function displayMovies(movies) {
-  resultsDiv.innerHTML = '';
-  if (movies.length === 0) {
-    resultsDiv.innerHTML = '<p>No se encontraron resultados.</p>';
-    return;
-  }
-  movies.forEach(movie => {
-    const movieCard = document.createElement('div');
-    movieCard.classList.add('movie-card');
-    movieCard.innerHTML = `
-      <img src="${movie.poster_path ? IMG_URL + movie.poster_path : 'https://via.placeholder.com/200x300'}" alt="${movie.title}">
-      <h3>${movie.title}</h3>
-      <p>Año: ${movie.release_date ? movie.release_date.split('-')[0] : 'Desconocido'}</p>
-      <button class="favorite-button" data-id="${movie.id}">❤️ Añadir a Favoritos</button>
-    `;
-    resultsDiv.appendChild(movieCard);
-  });
+    resultsDiv.innerHTML = '';
+    if (movies.length === 0) {
+      resultsDiv.innerHTML = '<p>No se encontraron resultados.</p>';
+      return;
+    }
+  
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+  
+    movies.forEach(movie => {
+      const movieCard = document.createElement('div');
+      movieCard.classList.add('movie-card');
+  
+      // Verificar si la película ya está en favoritos
+      const isFavorite = favorites.some(fav => fav.id === movie.id);
+  
+      movieCard.innerHTML = `
+        <img src="${movie.poster_path ? IMG_URL + movie.poster_path : 'https://via.placeholder.com/200x300'}" alt="${movie.title}">
+        <h3>${movie.title}</h3>
+        <p>Año: ${movie.release_date ? movie.release_date.split('-')[0] : 'Desconocido'}</p>
+        <button class="favorite-button" data-id="${movie.id}">
+          ${isFavorite ? '❌ Quitar de Favoritos' : '❤️ Añadir a Favoritos'}
+        </button>
+      `;
+      resultsDiv.appendChild(movieCard);
+    });
 
   // Agregar evento a los botones de favoritos
   document.querySelectorAll('.favorite-button').forEach(button => {
     button.addEventListener('click', () => {
-      const movieId = button.getAttribute('data-id');
-      const movie = movies.find(m => m.id == movieId);
-      addToFavorites(movie);
+      const movieId = parseInt(button.getAttribute('data-id'));
+      const movie = movies.find(m => m.id === movieId);
+
+      if (button.textContent.includes('Quitar')) {
+        removeFromFavorites(movieId);
+        button.textContent = '❤️ Añadir a Favoritos'; // Cambiar el texto del botón
+      } else {
+        addToFavorites(movie);
+        button.textContent = '❌ Quitar de Favoritos'; // Cambiar el texto del botón
+      }
     });
   });
 }
+
 
 // Función para agregar una película a favoritos
 function addToFavorites(movie) {
@@ -80,16 +97,23 @@ function addToFavorites(movie) {
   }
 }
 
+function removeFromFavorites(movieId) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(fav => fav.id !== movieId);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    alert('Película quitada de favoritos.');
+  }
+
 // Función para mostrar favoritos
 function displayFavorites() {
-  const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-  if (favorites.length === 0) {
-    resultsDiv.innerHTML = '<p>No tienes películas en favoritos.</p>';
-  } else {
-    displayMovies(favorites);
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (favorites.length === 0) {
+      resultsDiv.innerHTML = '<p>No tienes películas en favoritos.</p>';
+    } else {
+      displayMovies(favorites); // Mostrar las películas favoritas
+    }
+    paginationDiv.innerHTML = ''; // Ocultar paginación en favoritos
   }
-  paginationDiv.innerHTML = ''; // Ocultar paginación en favoritos
-}
 
 // Función para actualizar la paginación
 function updatePagination(totalPages, currentPage) {
