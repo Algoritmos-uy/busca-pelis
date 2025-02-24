@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buscador de Películas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Buscador de Películas</h1>
+
+    <!-- Barra de búsqueda -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar películas...">
+      <button id="searchButton">Buscar</button>
+      <button id="clearSearch">Limpiar Búsqueda</button>
+    </div>
+
+    <!-- Botón para ver favoritos -->
+    <button id="showFavorites">❤️ Ver Favoritos</button>
+
+    <!-- Contenedor de resultados -->
+    <div id="results"></div>
+
+    <!-- Paginación -->
+    <div id="pagination">
+      <button id="prevPage">Anterior</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage">Siguiente</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
